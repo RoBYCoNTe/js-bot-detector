@@ -1,40 +1,56 @@
-
-function BotDetector(callback) {
+function BotDetector(args) {
 	var self = this;
 	self.isBot = false;
 	self.tests = {};
 
-	self.tests.scroll = function() {
-		var e = function() {
-			self.tests.scroll = true;
-			self.update()
-			self.unbindEvent(window, 'scroll', e)
-			self.unbindEvent(document, 'scroll', e)
+	var selectedTests = args.tests || [];
+	if (selectedTests.length == 0 || selectedTests.indexOf(BotDetector.Tests.SCROLL) != -1) {
+		self.tests[BotDetector.Tests.SCROLL] = function() {
+			var e = function() {
+				self.tests[BotDetector.Tests.SCROLL] = true;
+				self.update()
+				self.unbindEvent(window, 'scroll', e)
+				self.unbindEvent(document, 'scroll', e)
+			};
+			self.bindEvent(window, 'scroll', e);
+			self.bindEvent(document, 'scroll', e);
 		};
-		self.bindEvent(window, 'scroll', e);
-		self.bindEvent(document, 'scroll', e);
-	};
-	self.tests.mouse = function() {
-		var e = function() {
-			self.tests.mouse = true;
-			self.update();
-			self.unbindEvent(window, 'mousemove', e);
-		}
-		self.bindEvent(window, 'mousemove', e);
-	};
-	self.tests.keyup = function() {
-		var e = function() {
-			self.tests.keyup = true;
-			self.update();
-			self.unbindEvent(window, 'keyup', e);
-		}
-		self.bindEvent(window, 'keyup', e);
-	};
+	}
+	if (selectedTests.length == 0 || selectedTests.indexOf(BotDetector.Tests.MOUSE) != -1) {
+		self.tests[BotDetector.Tests.MOUSE] = function() {
+			var e = function() {
+				self.tests[BotDetector.Tests.MOUSE] = true;
+				self.update();
+				self.unbindEvent(window, 'mousemove', e);
+			}
+			self.bindEvent(window, 'mousemove', e);
+		};
+	}
+	if (selectedTests.length == 0 || selectedTests.indexOf(BotDetector.Tests.KEYUP) != -1) {
+		self.tests[BotDetector.Tests.KEYUP] = function() {
+			var e = function() {
+				self.tests[BotDetector.Tests.KEYUP] = true;
+				self.update();
+				self.unbindEvent(window, 'keyup', e);
+			}
+			self.bindEvent(window, 'keyup', e);
+		};	
+	}	
 
 	self.cases = {};
-	self.callback = callback;
+	self.timeout = args.timeout || 1000;
+	self.callback = args.callback || null;
+	self.detected = false;
 }
-BotDetector.prototype.update = function() {
+
+BotDetector.Tests = {
+	KEYUP: 'keyup',
+	MOUSE: 'mouse',
+	SCROLL: 'scroll',
+	GESTURE: 'gesture',
+	GYROSCOPE: 'gyroscope'
+};
+BotDetector.prototype.update = function(notify) {
 	var self = this;
 	var count = 0;
 	var tests = 0;
@@ -48,20 +64,12 @@ BotDetector.prototype.update = function() {
 		tests++;
 	}
 	self.isBot = count ==  0;
-	if (count === tests) {
-		self.__fired = true;
-		self.callback(self);	
-	}	
-	setTimeout(function() {
-		if (self.__fired) {
-			return;
-		}
+	self.allMatched = count == tests;
+	if (notify !== false) {
 		self.callback(self);
-	}, 1000);
+	}
 }
-BotDetector.prototype.executedTests() {
-	return 0;
-};
+
 BotDetector.prototype.bindEvent = function(e, type, handler) {
 	if (e.addEventListener) {
 		e.addEventListener(type, handler, false);
@@ -86,16 +94,15 @@ BotDetector.prototype.unbindEvent = function(e, type, handle) {
 	}
 };
 
-BotDetector.prototype.watch = function(callback) {
-	// Callback override 
-	if (callback) {
-		this.callback = callback;
-	}
-	this.__fired = false;
+BotDetector.prototype.monitor = function() {
+	var self = this;
 	for(var i in this.tests) {
 		if (this.tests.hasOwnProperty(i)) {
 			this.tests[i].call();
 		}
-		this.update();
-	}
+	}	
+	this.update(false);
+	setTimeout(function() {
+		self.update(true);
+	}, self.timeout);
 };
