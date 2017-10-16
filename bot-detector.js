@@ -9,11 +9,11 @@ function BotDetector(args) {
 			var e = function() {
 				self.tests[BotDetector.Tests.SCROLL] = true;
 				self.update()
-				self.unbindEvent(window, 'scroll', e)
-				self.unbindEvent(document, 'scroll', e)
+				self.unbindEvent(window, BotDetector.Tests.SCROLL, e)
+				self.unbindEvent(document, BotDetector.Tests.SCROLL, e)
 			};
-			self.bindEvent(window, 'scroll', e);
-			self.bindEvent(document, 'scroll', e);
+			self.bindEvent(window, BotDetector.Tests.SCROLL, e);
+			self.bindEvent(document, BotDetector.Tests.SCROLL, e);
 		};
 	}
 	if (selectedTests.length == 0 || selectedTests.indexOf(BotDetector.Tests.MOUSE) != -1) {
@@ -21,9 +21,9 @@ function BotDetector(args) {
 			var e = function() {
 				self.tests[BotDetector.Tests.MOUSE] = true;
 				self.update();
-				self.unbindEvent(window, 'mousemove', e);
+				self.unbindEvent(window, BotDetector.Tests.MOUSE, e);
 			}
-			self.bindEvent(window, 'mousemove', e);
+			self.bindEvent(window, BotDetector.Tests.MOUSE, e);
 		};
 	}
 	if (selectedTests.length == 0 || selectedTests.indexOf(BotDetector.Tests.KEYUP) != -1) {
@@ -31,11 +31,52 @@ function BotDetector(args) {
 			var e = function() {
 				self.tests[BotDetector.Tests.KEYUP] = true;
 				self.update();
-				self.unbindEvent(window, 'keyup', e);
+				self.unbindEvent(window, BotDetector.Tests.KEYUP, e);
 			}
-			self.bindEvent(window, 'keyup', e);
+			self.bindEvent(window, BotDetector.Tests.KEYUP, e);
 		};	
 	}	
+	if (selectedTests.length == 0 || selectedTests.indexOf(BotDetector.Tests.SWIPE) != -1) {
+		self.tests[BotDetector.Tests.SWIPE_TOUCHSTART] = function() {
+			var e = function() {
+				self.tests[BotDetector.Tests.SWIPE_TOUCHSTART] = true;
+				self.update();
+				self.unbindEvent(document, BotDetector.Tests.SWIPE_TOUCHSTART);
+			}
+			self.bindEvent(document, BotDetector.Tests.SWIPE_TOUCHSTART);
+		}
+	}
+	if (selectedTests.length == 0 || selectedTests.indexOf(BotDetector.Tests.DEVICE_MOTION) != -1) {
+		self.tests[BotDetector.Tests.DEVICE_MOTION] = function() {
+			var e = function() {
+				self.tests[BotDetector.Tests.DEVICE_MOTION] = true;
+				self.update();
+				self.unbindEvent(window, BotDetector.Tests.DEVICE_MOTION, e);
+			}
+			self.bindEvent(window, BotDetector.Tests.DEVICE_MOTION, e);
+		}
+	}
+	if (selectedTests.length == 0 || selectedTests.indexOf(BotDetector.Tests.DEVICE_ORIENTATION) != -1) {
+		self.tests[BotDetector.Tests.DEVICE_ORIENTATION] = function() {
+			var e = function() {
+				self.tests[BotDetector.Tests.DEVICE_ORIENTATION] = true;
+				self.update();
+				self.unbindEvent(window, BotDetector.Tests.DEVICE_ORIENTATION, e);
+			}
+			self.bindEvent(window, BotDetector.Tests.DEVICE_ORIENTATION);
+		}
+	}
+	if (selectedTests.length == 0 || selectedTests.indexOf(BotDetector.Tests.DEVICE_ORIENTATION_MOZ) != -1) {
+		self.tests[BotDetector.Tests.DEVICE_ORIENTATION_MOZ] = function() {
+			var e = function() {
+				self.tests[BotDetector.Tests.DEVICE_ORIENTATION_MOZ] = true;
+				self.update();
+				self.unbindEvent(window, BotDetector.Tests.DEVICE_ORIENTATION_MOZ);
+			}
+			self.bindEvent(window, BotDetector.Tests.DEVICE_ORIENTATION_MOZ);
+		}
+	}
+
 
 	self.cases = {};
 	self.timeout = args.timeout || 1000;
@@ -45,10 +86,17 @@ function BotDetector(args) {
 
 BotDetector.Tests = {
 	KEYUP: 'keyup',
-	MOUSE: 'mouse',
+	MOUSE: 'mousemove',
+	SWIPE: 'swipe',
+	SWIPE_TOUCHSTART: 'touchstart',
+	SWIPE_TOUCHMOVE: 'touchmove',
+	SWIPE_TOUCHEND: 'touchend',
 	SCROLL: 'scroll',
 	GESTURE: 'gesture',
-	GYROSCOPE: 'gyroscope'
+	GYROSCOPE: 'gyroscope',
+	DEVICE_MOTION: 'devicemotion',
+	DEVICE_ORIENTATION: 'deviceorientation',
+	DEVICE_ORIENTATION_MOZ: 'MozOrientation'
 };
 BotDetector.prototype.update = function(notify) {
 	var self = this;

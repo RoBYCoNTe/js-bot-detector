@@ -3,12 +3,22 @@
 		<title>JS Bot Detector</title>
 		<!-- Latest compiled and minified CSS -->
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<script src="bot-detector.js"></script>
 		<script type="text/javascript" language="javascript">
 			new BotDetector({
 				timeout: 1000,
 				callback: function(result) {
-					console.warn('isBot:', result.isBot)
+					var message = document.getElementById('message');
+					var list = document.getElementById('tests');
+
+					message.innerText = result.isBot ? "You are a fucking bot!" : "Ok, I believe you are real...";	
+					list.innerHTML = '';
+					for(var test in result.tests) {
+						var li = document.createElement('li');
+						li.innerText = test + ': ' + (result.tests[test] === true ? 'Yes' : 'No');
+						list.appendChild(li);
+					}	
 				}
 			}).monitor();
 		</script>
@@ -17,6 +27,12 @@
 		<div class="container">
 			<h1 class="page-header">JS Bot Detector</h1>
 			<div class="row">
+				<div class="col-lg-12">
+					<p class="text-center">Are you a bot?</p>
+					<p class="text-center" id="message">I'm checking...</p>
+					<ul id="tests">
+					</ul>
+				</div>
 			</div>
 		</div>
 	</body>
