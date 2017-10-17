@@ -16,7 +16,7 @@
 					list.innerHTML = '';
 					for(var test in result.tests) {
 						var li = document.createElement('li');
-						li.innerText = test + ': ' + (result.tests[test] === true ? 'Yes' : 'No');
+						li.innerText = test + ': ' + JSON.stringify(result.tests[test])
 						list.appendChild(li);
 					}	
 				}

@@ -48,10 +48,35 @@ function BotDetector(args) {
 	}
 	if (selectedTests.length == 0 || selectedTests.indexOf(BotDetector.Tests.DEVICE_MOTION) != -1) {
 		self.tests[BotDetector.Tests.DEVICE_MOTION] = function() {
-			var e = function() {
-				self.tests[BotDetector.Tests.DEVICE_MOTION] = true;
-				self.update();
-				self.unbindEvent(window, BotDetector.Tests.DEVICE_MOTION, e);
+			var e = function(event) {
+				if(event.rotationRate.alpha || event.rotationRate.beta || event.rotationRate.gamma) {
+					var userAgent = navigator.userAgent.toLowerCase();
+					var isAndroid = userAgent.indexOf('android') != -1;
+					var beta = isAndroid ? event.rotationRate.beta : Math.round(event.rotationRate.beta / 10) * 10;
+					var gamma = isAndroid ? event.rotationRate.gamma : Math.round(event.rotationRate.gamma / 10) * 10;
+					if (!self.lastRotationData) {
+						self.lastRotationData = {
+							beta: beta,
+							gamma: gamma
+						};
+					}
+					else {
+						var movement = beta != self.lastRotationData.beta || gamma != self.lastRotationData.gamma;
+						if (isAndroid) {
+							movement = movement && (beta > 0.2 || gamma > 0.2);
+						}
+						var args = { beta: beta, gamma: gamma }
+						self.tests[BotDetector.Tests.DEVICE_MOTION] = movement;
+						self.update();
+						if (movement) {
+							self.unbindEvent(window, BotDetector.Tests.DEVICE_MOTION, e);		
+						}
+					}
+				}
+				else {
+					self.tests[BotDetector.Tests.DEVICE_MOTION] = false;
+				}
+				
 			}
 			self.bindEvent(window, BotDetector.Tests.DEVICE_MOTION, e);
 		}
@@ -141,7 +166,6 @@ BotDetector.prototype.unbindEvent = function(e, type, handle) {
 		}
 	}
 };
-
 BotDetector.prototype.monitor = function() {
 	var self = this;
 	for(var i in this.tests) {
