@@ -11,7 +11,9 @@ This project aims to be a tool that can help you doing that checking many scenar
 ## How to
 Download and put `bot-detector.js` into your project js folder.
 After you have to include it in your page:
-`<script src="js/bot-detector.js"></script>`
+```
+<script src="js/bot-detector.js"></script>
+````
 
 
 Now you can instantiate new `BotDetector` class and wait for the result event. 
