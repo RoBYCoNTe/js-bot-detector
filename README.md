@@ -1,4 +1,4 @@
-# js-bot-detector
+# Javascript BotDetector
 An easy way to check if users visiting your websites are bots or not. 
 
 If you are selling products online or you just want to check if your visitors are real persons, you can act many strategies to do that.
