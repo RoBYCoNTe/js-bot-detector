@@ -11,10 +11,12 @@ This project aims to be a tool that can help you doing that checking many scenar
 ## How to
 Download and put `bot-detector.js` into your project js folder.
 After you have to include it in your page:
-```<script src="js/bot-detector.js"></script>```
+`<script src="js/bot-detector.js"></script>`
+
 
 Now you can instantiate new `BotDetector` class and wait for the result event. 
-```<script type="text/javascript" language="javascript">
+```
+<script type="text/javascript" language="javascript">
 	var callback = function(result) {
 		if (result.isBot) {
 			alert("You are a fucking bot!");
@@ -27,7 +29,7 @@ Now you can instantiate new `BotDetector` class and wait for the result event.
 		timeout: 1000,
 		callback: callback
 	});
-</script>```
-
+</script>
+```
 Your `callback` method will be called when detection process is completed and will returns a property, `isBot` containing response
 to your question: is, my visitor, a bot?
